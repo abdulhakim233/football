@@ -1,0 +1,1500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Football Shuffler</title>
+  <style>
+    :root {
+      --bg: #090d16;
+      --surface: #111827;
+      --surface-elevated: #1a2234;
+      --surface-hover: #222d42;
+      --border: #243046;
+      --border-subtle: #1c2637;
+      --text: #f3f4f6;
+      --text-muted: #94a3b8;
+      --text-faint: #64748b;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --primary-faint: rgba(16, 185, 129, 0.1);
+      --primary-border: rgba(16, 185, 129, 0.25);
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --danger-faint: rgba(239, 68, 68, 0.1);
+      --warning: #f59e0b;
+      --radius: 10px;
+      --radius-sm: 6px;
+      --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #f8fafc;
+        --surface: #ffffff;
+        --surface-elevated: #f1f5f9;
+        --surface-hover: #e2e8f0;
+        --border: #e2e8f0;
+        --border-subtle: #edf2f7;
+        --text: #0f172a;
+        --text-muted: #475569;
+        --text-faint: #94a3b8;
+        --primary: #059669;
+        --primary-hover: #047857;
+        --primary-faint: rgba(5, 150, 105, 0.08);
+        --primary-border: rgba(5, 150, 105, 0.25);
+        --danger: #e11d48;
+        --danger-hover: #be123c;
+        --danger-faint: rgba(225, 29, 72, 0.08);
+        --warning: #d97706;
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+      }
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding: 16px 12px 64px;
+      max-width: 860px;
+      margin: 0 auto;
+      letter-spacing: -0.01em;
+    }
+
+    header {
+      padding: 16px 4px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--border-subtle);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .brand-title {
+      font-size: 1.35rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .brand-title span.accent {
+      color: var(--primary);
+    }
+
+    .brand-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-faint);
+      margin-top: 2px;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .user-pill {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .user-pill .username-txt {
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow);
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .count-pill {
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: var(--surface-elevated);
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+    }
+
+    /* Grid Controls */
+    .controls-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .control-item {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .control-label {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    input[type="text"],
+    input[type="password"],
+    input[type="number"],
+    select {
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      background: var(--surface-elevated);
+      color: var(--text);
+      outline: none;
+      transition: all 0.15s ease;
+      min-height: 44px;
+      width: 100%;
+    }
+
+    input:focus,
+    select:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px var(--primary-faint);
+    }
+
+    .add-form-row {
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      gap: 8px;
+    }
+
+    @media (max-width: 580px) {
+      .add-form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .btn {
+      font-family: inherit;
+      font-size: 0.9rem;
+      font-weight: 600;
+      padding: 10px 18px;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      min-height: 44px;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: var(--primary-hover);
+    }
+
+    .btn-subtle {
+      background: var(--surface-elevated);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    .btn-subtle:hover {
+      background: var(--surface-hover);
+      border-color: var(--text-faint);
+    }
+
+    .btn-sm {
+      min-height: 34px;
+      padding: 6px 12px;
+      font-size: 0.82rem;
+    }
+
+    .btn-full {
+      width: 100%;
+    }
+
+    .helper-text {
+      font-size: 0.78rem;
+      color: var(--text-faint);
+      margin-top: 8px;
+    }
+
+    /* Player Roster Breakdown by Tier */
+    .tier-accordion {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .tier-block {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+    }
+
+    .tier-block-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+
+    .tier-caption {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .tier-pill-count {
+      font-size: 0.72rem;
+      color: var(--text-faint);
+    }
+
+    .player-chip-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .player-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: 0.86rem;
+      font-weight: 500;
+      color: var(--text);
+    }
+
+    .player-chip .remove-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-faint);
+      cursor: pointer;
+      font-size: 1rem;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 2px;
+    }
+
+    .player-chip .remove-btn:hover {
+      color: var(--danger);
+    }
+
+    .notice-box {
+      margin-top: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.84rem;
+      display: none;
+    }
+
+    .notice-danger {
+      background: var(--danger-faint);
+      border: 1px solid var(--danger);
+      color: var(--danger);
+    }
+
+    /* MATCH ARENA (Winner Stays On) */
+    .match-arena {
+      background: var(--surface);
+      border: 1px solid var(--primary-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .match-arena::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: var(--primary);
+      border-radius: var(--radius) var(--radius) 0 0;
+    }
+
+    .arena-status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .arena-title {
+      font-size: 0.85rem;
+      font-weight: 800;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--primary);
+    }
+
+    .match-fixture {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: stretch;
+      gap: 12px;
+    }
+
+    @media (max-width: 540px) {
+      .match-fixture {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .match-side-card {
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 10px;
+    }
+
+    .match-side-captain {
+      font-size: 0.72rem;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      font-weight: 700;
+    }
+
+    .match-side-name {
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .match-side-roster {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .vs-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 900;
+      font-size: 0.85rem;
+      color: var(--text-faint);
+      letter-spacing: 0.1em;
+    }
+
+    .btn-win-action {
+      margin-top: auto;
+      width: 100%;
+      background: var(--primary-faint);
+      border: 1px solid var(--primary-border);
+      color: var(--primary);
+      font-size: 0.85rem;
+      font-weight: 700;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      min-height: 38px;
+    }
+
+    .btn-win-action:hover {
+      background: var(--primary);
+      color: #ffffff;
+    }
+
+    .bench-queue {
+      margin-top: 16px;
+      padding-top: 14px;
+      border-top: 1px solid var(--border-subtle);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .bench-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .bench-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-elevated);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+
+    .bench-order {
+      color: var(--primary);
+      font-size: 0.72rem;
+      font-weight: 800;
+    }
+
+    /* TEAMS ROSTER GRID */
+    .teams-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 16px;
+    }
+
+    .team-panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-panel-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .team-title-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .team-leader-label {
+      font-size: 0.68rem;
+      font-weight: 700;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .team-panel-name {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--text);
+      letter-spacing: -0.01em;
+    }
+
+    .team-player-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex: 1;
+    }
+
+    .team-player-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 6px 10px;
+      background: var(--surface-elevated);
+      border-radius: var(--radius-sm);
+      font-size: 0.86rem;
+      border: 1px solid transparent;
+    }
+
+    .team-player-row.is-gk {
+      border-color: rgba(245, 158, 11, 0.4);
+      background: rgba(245, 158, 11, 0.06);
+    }
+
+    .player-id-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .gk-badge {
+      font-size: 0.95rem;
+      line-height: 1;
+    }
+
+    .tier-badge {
+      font-size: 0.7rem;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      background: var(--border);
+      color: var(--text-muted);
+    }
+
+    .team-panel-bottom {
+      display: flex;
+      justify-content: flex-end;
+      padding-top: 8px;
+      border-top: 1px solid var(--border-subtle);
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-faint);
+      font-size: 0.9rem;
+    }
+
+    /* AUTH MODAL */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      padding: 16px;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+
+    .modal-backdrop.is-open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-content {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .modal-title {
+      font-size: 1.15rem;
+      font-weight: 800;
+    }
+
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--text-faint);
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .auth-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 18px;
+    }
+
+    .auth-tab {
+      flex: 1;
+      padding: 10px;
+      text-align: center;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .auth-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .form-field {
+      margin-bottom: 14px;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .modal-msg {
+      font-size: 0.82rem;
+      margin-bottom: 14px;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      display: none;
+    }
+
+    /* Accessibility */
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      outline: 2px solid var(--primary);
+      outline-offset: 1px;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div>
+      <div class="brand-title">
+        <span>⚽</span>
+        <span>Football<span class="accent">Shuffler</span></span>
+      </div>
+      <div class="brand-subtitle">Pickup Match Balancer & MySQL Cloud Sync</div>
+    </div>
+    
+    <div class="header-actions">
+      <div id="user-display" class="user-pill" style="display: none;">
+        <span>👤</span>
+        <span class="username-txt" id="username-val"></span>
+        <button class="btn btn-subtle btn-sm" style="padding: 2px 8px; min-height: 26px;" onclick="handleLogout()">Logout</button>
+      </div>
+      <button id="btn-open-auth" class="btn btn-subtle btn-sm" onclick="openAuthModal()">
+        Register / Login
+      </button>
+      <button class="btn btn-subtle btn-sm" onclick="clearAllData()">Reset All</button>
+    </div>
+  </header>
+
+  <!-- Configuration & Team Settings -->
+  <section class="card" aria-label="Game Configuration">
+    <div class="section-header">
+      <h2 class="section-title">Match Settings</h2>
+      <div id="sync-status-indicator" class="count-pill" style="display: none;">☁️ Synced</div>
+    </div>
+
+    <div class="controls-grid">
+      <div class="control-item">
+        <label class="control-label" for="cfg-num-teams">Number of Teams</label>
+        <input type="number" id="cfg-num-teams" min="2" max="8" value="3">
+      </div>
+
+      <div class="control-item">
+        <label class="control-label" for="cfg-num-tiers">Active Tiers</label>
+        <input type="number" id="cfg-num-tiers" min="1" max="10" value="5">
+      </div>
+
+      <div class="control-item">
+        <label class="control-label" for="cfg-target-players">Target Players / Team</label>
+        <input type="number" id="cfg-target-players" min="1" max="25" placeholder="Auto" value="">
+      </div>
+    </div>
+
+    <div id="validation-warning" class="notice-box notice-danger" role="alert"></div>
+  </section>
+
+  <!-- Add Players -->
+  <section class="card" aria-label="Add Players">
+    <div class="section-header">
+      <h2 class="section-title">
+        Player Roster
+        <span class="count-pill" id="total-count-pill">0 Players</span>
+      </h2>
+    </div>
+
+    <form onsubmit="event.preventDefault(); handleAddPlayer();">
+      <div class="add-form-row">
+        <input 
+          type="text" 
+          id="player-name-input" 
+          placeholder="Enter player name or paste list (e.g. Messi, Ronaldo, Mbappe)..."
+          autocomplete="off"
+          required
+        >
+        <select id="player-tier-select" aria-label="Player Tier">
+          <!-- Populated dynamically based on cfg-num-tiers -->
+        </select>
+        <button type="submit" class="btn btn-primary">Add Players</button>
+      </div>
+      <div class="helper-text">Add single or comma-separated names. Press Enter to submit.</div>
+    </form>
+
+    <div class="tier-accordion" id="roster-by-tier">
+      <!-- Grouped by tier -->
+    </div>
+
+    <div style="margin-top: 20px;">
+      <button class="btn btn-primary btn-full" onclick="handleShuffleTeams()">
+        ⚖️ Balance & Shuffle Teams
+      </button>
+    </div>
+  </section>
+
+  <!-- Match Arena: Winner Stays On -->
+  <section id="match-arena-section" class="match-arena" style="display: none;" aria-label="Pitch Match">
+    <div class="arena-status-bar">
+      <div class="arena-title">Match #<span id="arena-game-index">1</span> • Pitch Active</div>
+      <button class="btn btn-subtle btn-sm" onclick="resetPlayOrder()">Reshuffle Queue</button>
+    </div>
+
+    <div class="match-fixture">
+      <!-- Side A -->
+      <div class="match-side-card">
+        <div class="match-side-captain">Team Leader</div>
+        <div class="match-side-name" id="side-a-name">Team A</div>
+        <div class="match-side-roster" id="side-a-count">0 players</div>
+        <button class="btn-win-action" onclick="recordMatchWin(0)">Won Match ✓</button>
+      </div>
+
+      <div class="vs-divider">VS</div>
+
+      <!-- Side B -->
+      <div class="match-side-card">
+        <div class="match-side-captain">Team Leader</div>
+        <div class="match-side-name" id="side-b-name">Team B</div>
+        <div class="match-side-roster" id="side-b-count">0 players</div>
+        <button class="btn-win-action" onclick="recordMatchWin(1)">Won Match ✓</button>
+      </div>
+    </div>
+
+    <div class="bench-queue" id="bench-queue-box">
+      <span class="bench-label">Waiting in Queue:</span>
+      <div id="bench-queue-list" style="display: flex; gap: 6px; flex-wrap: wrap;"></div>
+    </div>
+  </section>
+
+  <!-- Team Cards Display -->
+  <section aria-label="Generated Teams">
+    <div class="section-header">
+      <h2 class="section-title">Balanced Rosters</h2>
+    </div>
+
+    <div id="teams-grid" class="teams-grid">
+      <!-- Team cards generated here -->
+    </div>
+    <div id="empty-teams-notice" class="empty-state">
+      Configure your players and tap <strong>"Balance & Shuffle Teams"</strong> to deal.
+    </div>
+  </section>
+
+  <!-- Auth Modal (Register / Login) -->
+  <div id="auth-modal" class="modal-backdrop">
+    <div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="auth-modal-title">
+      <div class="modal-header">
+        <h3 id="auth-modal-title" class="modal-title">MySQL Cloud Account</h3>
+        <button class="modal-close" onclick="closeAuthModal()" aria-label="Close modal">×</button>
+      </div>
+
+      <div class="auth-tabs">
+        <button id="tab-login" class="auth-tab active" onclick="switchAuthTab('login')">Sign In</button>
+        <button id="tab-register" class="auth-tab" onclick="switchAuthTab('register')">Register</button>
+      </div>
+
+      <div id="modal-feedback" class="modal-msg"></div>
+
+      <form id="auth-form" onsubmit="event.preventDefault(); submitAuthForm();">
+        <div class="form-field">
+          <label for="auth-username">Username</label>
+          <input type="text" id="auth-username" required autocomplete="username">
+        </div>
+
+        <div class="form-field" id="email-field-group" style="display: none;">
+          <label for="auth-email">Email (Optional)</label>
+          <input type="text" id="auth-email" autocomplete="email">
+        </div>
+
+        <div class="form-field">
+          <label for="auth-password">Password</label>
+          <input type="password" id="auth-password" required autocomplete="current-password">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-full" id="auth-submit-btn" style="margin-top: 10px;">
+          Sign In
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // --- State Management ---
+    let state = {
+      players: [],
+      numTeams: 3,
+      numTiers: 5,
+      targetPlayersPerTeam: 0,
+      teams: [],
+      playQueue: [],
+      gameNumber: 1
+    };
+
+    let currentUser = null;
+    let authMode = 'login'; // 'login' or 'register'
+    const STORAGE_KEY = "football_shuffler_pro_v2";
+    const AUTH_KEY = "football_shuffler_token";
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // LocalStorage helper with try/catch
+    function saveState() {
+      try {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      } catch (err) {
+        console.warn("Storage write error:", err);
+      }
+      syncToBackend();
+    }
+
+    function loadState() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed.players)) state.players = parsed.players;
+          if (parsed.numTeams) state.numTeams = Math.max(2, Math.min(8, parsed.numTeams));
+          if (parsed.numTiers) state.numTiers = Math.max(1, Math.min(10, parsed.numTiers));
+          if (parsed.targetPlayersPerTeam !== undefined) state.targetPlayersPerTeam = parsed.targetPlayersPerTeam;
+          if (Array.isArray(parsed.teams)) state.teams = parsed.teams;
+          if (Array.isArray(parsed.playQueue)) state.playQueue = parsed.playQueue;
+          if (parsed.gameNumber) state.gameNumber = parsed.gameNumber;
+        }
+      } catch (err) {
+        console.warn("Storage read error:", err);
+      }
+    }
+
+    function clearAllData() {
+      if (confirm("Reset all settings and clear the player roster?")) {
+        localStorage.removeItem(STORAGE_KEY);
+        state = {
+          players: [],
+          numTeams: 3,
+          numTiers: 5,
+          targetPlayersPerTeam: 0,
+          teams: [],
+          playQueue: [],
+          gameNumber: 1
+        };
+        syncConfigInputs();
+        renderAll();
+        syncToBackend();
+      }
+    }
+
+    // --- Backend API Sync (FastAPI / MySQL) ---
+    async function syncToBackend() {
+      const token = localStorage.getItem(AUTH_KEY);
+      if (!token) return;
+
+      try {
+        const res = await fetch('/api/game-data', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          body: JSON.stringify({ state_json: JSON.stringify(state) })
+        });
+        if (res.ok) {
+          showSyncIndicator();
+        }
+      } catch (e) {
+        // Backend not running locally or offline - graceful fallback to localStorage
+      }
+    }
+
+    async function loadFromBackend() {
+      const token = localStorage.getItem(AUTH_KEY);
+      if (!token) return;
+
+      try {
+        const userRes = await fetch('/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (userRes.ok) {
+          currentUser = await userRes.json();
+          updateUserUI();
+
+          const dataRes = await fetch('/api/game-data', {
+            headers: { 'Authorization': `Bearer ${token}` }
+          });
+          if (dataRes.ok) {
+            const data = await dataRes.json();
+            if (data.state_json) {
+              state = JSON.parse(data.state_json);
+              syncConfigInputs();
+              renderAll();
+            }
+          }
+        } else {
+          localStorage.removeItem(AUTH_KEY);
+        }
+      } catch (e) {
+        // Offline or backend inactive
+      }
+    }
+
+    function showSyncIndicator() {
+      const el = document.getElementById('sync-status-indicator');
+      el.style.display = 'block';
+      setTimeout(() => {
+        el.style.display = 'none';
+      }, 3000);
+    }
+
+    // --- Auth Modal Flow ---
+    function openAuthModal() {
+      document.getElementById('auth-modal').classList.add('is-open');
+      clearModalFeedback();
+    }
+
+    function closeAuthModal() {
+      document.getElementById('auth-modal').classList.remove('is-open');
+    }
+
+    function switchAuthTab(mode) {
+      authMode = mode;
+      document.getElementById('tab-login').classList.toggle('active', mode === 'login');
+      document.getElementById('tab-register').classList.toggle('active', mode === 'register');
+      document.getElementById('email-field-group').style.display = (mode === 'register') ? 'block' : 'none';
+      document.getElementById('auth-submit-btn').textContent = (mode === 'register') ? 'Create Account' : 'Sign In';
+      clearModalFeedback();
+    }
+
+    function clearModalFeedback() {
+      const fb = document.getElementById('modal-feedback');
+      fb.style.display = 'none';
+      fb.textContent = '';
+      fb.className = 'modal-msg';
+    }
+
+    function showModalFeedback(msg, isError = true) {
+      const fb = document.getElementById('modal-feedback');
+      fb.style.display = 'block';
+      fb.textContent = msg;
+      fb.className = isError ? 'modal-msg notice-danger' : 'modal-msg';
+      if (!isError) {
+        fb.style.background = 'var(--primary-faint)';
+        fb.style.color = 'var(--primary)';
+        fb.style.border = '1px solid var(--primary-border)';
+      }
+    }
+
+    async function submitAuthForm() {
+      const username = document.getElementById('auth-username').value.trim();
+      const password = document.getElementById('auth-password').value;
+      const email = document.getElementById('auth-email').value.trim();
+
+      if (!username || !password) return;
+
+      try {
+        let res;
+        if (authMode === 'register') {
+          res = await fetch('/api/auth/register', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password, email: email || null })
+          });
+        } else {
+          const form = new URLSearchParams();
+          form.append('username', username);
+          form.append('password', password);
+          res = await fetch('/api/auth/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: form
+          });
+        }
+
+        const data = await res.json();
+        if (!res.ok) {
+          showModalFeedback(data.detail || 'Authentication failed.');
+          return;
+        }
+
+        localStorage.setItem(AUTH_KEY, data.access_token);
+        currentUser = data.user;
+        updateUserUI();
+        closeAuthModal();
+        syncToBackend();
+      } catch (err) {
+        showModalFeedback('Cannot connect to API backend. Start FastAPI server or check connection.');
+      }
+    }
+
+    function handleLogout() {
+      localStorage.removeItem(AUTH_KEY);
+      currentUser = null;
+      updateUserUI();
+    }
+
+    function updateUserUI() {
+      const display = document.getElementById('user-display');
+      const openBtn = document.getElementById('btn-open-auth');
+      const val = document.getElementById('username-val');
+
+      if (currentUser) {
+        display.style.display = 'flex';
+        val.textContent = currentUser.username;
+        openBtn.style.display = 'none';
+      } else {
+        display.style.display = 'none';
+        openBtn.style.display = 'inline-flex';
+      }
+    }
+
+    // --- Array Utilities ---
+    function shuffle(arr) {
+      const copy = [...arr];
+      for (let i = copy.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [copy[i], copy[j]] = [copy[j], copy[i]];
+      }
+      return copy;
+    }
+
+    // --- Player Management ---
+    function handleAddPlayer() {
+      const nameInput = document.getElementById('player-name-input');
+      const tierSelect = document.getElementById('player-tier-select');
+      const rawText = nameInput.value.trim();
+      const tier = parseInt(tierSelect.value, 10) || 1;
+
+      if (!rawText) return;
+
+      const names = rawText.split(',').map(s => s.trim()).filter(Boolean);
+      names.forEach(name => {
+        state.players.push({
+          id: 'p_' + Date.now() + '_' + Math.random().toString(36).substring(2, 7),
+          name: name,
+          tier: tier
+        });
+      });
+
+      nameInput.value = '';
+      nameInput.focus();
+
+      saveState();
+      renderAll();
+    }
+
+    function removePlayer(id) {
+      state.players = state.players.filter(p => p.id !== id);
+      saveState();
+      renderAll();
+    }
+
+    function validateRoster() {
+      const warningEl = document.getElementById('validation-warning');
+      const requiredMin = state.numTeams;
+
+      if (state.players.length > 0 && state.players.length < requiredMin) {
+        warningEl.style.display = 'block';
+        warningEl.textContent = `Insufficient players: You have ${state.players.length} players for ${state.numTeams} teams (minimum 1 player per team required).`;
+        return false;
+      }
+
+      if (state.targetPlayersPerTeam > 0) {
+        const totalTarget = state.targetPlayersPerTeam * state.numTeams;
+        if (state.players.length < totalTarget) {
+          warningEl.style.display = 'block';
+          warningEl.textContent = `Target alert: Configured for ${state.targetPlayersPerTeam} players/team (${totalTarget} total needed). Current count is ${state.players.length}. Extra slots will remain empty.`;
+          return true;
+        }
+      }
+
+      warningEl.style.display = 'none';
+      return true;
+    }
+
+    // --- Team Balancing & Shuffle ---
+    function handleShuffleTeams() {
+      if (!validateRoster() && state.players.length < state.numTeams) {
+        alert(`Need at least ${state.numTeams} players to split into ${state.numTeams} teams.`);
+        return;
+      }
+
+      const numTeams = state.numTeams;
+      const newTeams = [];
+      for (let i = 0; i < numTeams; i++) {
+        newTeams.push({
+          id: 'team_' + (i + 1),
+          name: '',
+          players: []
+        });
+      }
+
+      for (let t = 1; t <= state.numTiers; t++) {
+        const tierPlayers = state.players.filter(p => p.tier === t);
+        if (tierPlayers.length === 0) continue;
+
+        const shuffled = shuffle(tierPlayers);
+        shuffled.forEach(player => {
+          const minCount = Math.min(...newTeams.map(team => team.players.length));
+          const candidates = newTeams.filter(team => team.players.length === minCount);
+          const chosenTeam = candidates[Math.floor(Math.random() * candidates.length)];
+
+          chosenTeam.players.push({
+            id: player.id,
+            name: player.name,
+            tier: player.tier,
+            isGk: false
+          });
+        });
+      }
+
+      newTeams.forEach((team, idx) => {
+        team.players.sort((a, b) => a.tier - b.tier);
+        if (team.players.length > 0) {
+          const leader = team.players[0];
+          team.name = `Team ${leader.name}`;
+          const randomGkIndex = Math.floor(Math.random() * team.players.length);
+          team.players[randomGkIndex].isGk = true;
+        } else {
+          team.name = `Team ${idx + 1}`;
+        }
+      });
+
+      state.teams = newTeams;
+      state.playQueue = shuffle(newTeams.map(t => t.id));
+      state.gameNumber = 1;
+
+      saveState();
+      renderAll();
+    }
+
+    function repickGoalkeeper(teamId) {
+      const team = state.teams.find(t => t.id === teamId);
+      if (!team || team.players.length === 0) return;
+
+      team.players.forEach(p => p.isGk = false);
+      const newGkIdx = Math.floor(Math.random() * team.players.length);
+      team.players[newGkIdx].isGk = true;
+
+      saveState();
+      renderTeams();
+    }
+
+    function recordMatchWin(winningSide) {
+      if (state.playQueue.length < 2) return;
+
+      const teamAId = state.playQueue[0];
+      const teamBId = state.playQueue[1];
+      const queueRest = state.playQueue.slice(2);
+
+      const winnerId = (winningSide === 0) ? teamAId : teamBId;
+      const loserId = (winningSide === 0) ? teamBId : teamAId;
+
+      if (queueRest.length > 0) {
+        state.playQueue = [winnerId, queueRest[0], ...queueRest.slice(1), loserId];
+      } else {
+        state.playQueue = [winnerId, loserId];
+      }
+
+      state.gameNumber += 1;
+      saveState();
+      renderMatchSection();
+    }
+
+    function resetPlayOrder() {
+      if (!state.teams.length) return;
+      state.playQueue = shuffle(state.teams.map(t => t.id));
+      state.gameNumber = 1;
+      saveState();
+      renderMatchSection();
+    }
+
+    function updateTierSelectDropdown() {
+      const select = document.getElementById('player-tier-select');
+      const currentSelected = parseInt(select.value, 10) || 1;
+      select.innerHTML = '';
+
+      for (let i = 1; i <= state.numTiers; i++) {
+        const opt = document.createElement('option');
+        opt.value = i;
+        opt.textContent = `Tier ${i}${i === 1 ? ' (Top)' : ''}`;
+        if (i === currentSelected || (currentSelected > state.numTiers && i === state.numTiers)) {
+          opt.selected = true;
+        }
+        select.appendChild(opt);
+      }
+    }
+
+    function renderRoster() {
+      const container = document.getElementById('roster-by-tier');
+      const totalPill = document.getElementById('total-count-pill');
+      totalPill.textContent = `${state.players.length} Player${state.players.length === 1 ? '' : 's'}`;
+
+      if (state.players.length === 0) {
+        container.innerHTML = '<div class="empty-state" style="padding: 16px;">No players added yet.</div>';
+        return;
+      }
+
+      let html = '';
+      for (let t = 1; t <= state.numTiers; t++) {
+        const tierPlayers = state.players.filter(p => p.tier === t);
+        if (tierPlayers.length === 0) continue;
+
+        html += `
+          <div class="tier-block">
+            <div class="tier-block-header">
+              <span class="tier-caption">Tier ${t}</span>
+              <span class="tier-pill-count">${tierPlayers.length}</span>
+            </div>
+            <div class="player-chip-container">
+              ${tierPlayers.map(p => `
+                <div class="player-chip">
+                  <span>${escapeHtml(p.name)}</span>
+                  <button type="button" class="remove-btn" title="Remove" onclick="removePlayer('${p.id}')">×</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      const excessPlayers = state.players.filter(p => p.tier > state.numTiers);
+      if (excessPlayers.length > 0) {
+        html += `
+          <div class="tier-block" style="border-color: var(--warning);">
+            <div class="tier-block-header">
+              <span class="tier-caption" style="color: var(--warning);">Other Tiers (Over Tier ${state.numTiers})</span>
+              <span class="tier-pill-count">${excessPlayers.length}</span>
+            </div>
+            <div class="player-chip-container">
+              ${excessPlayers.map(p => `
+                <div class="player-chip">
+                  <span>${escapeHtml(p.name)} (T${p.tier})</span>
+                  <button type="button" class="remove-btn" title="Remove" onclick="removePlayer('${p.id}')">×</button>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function renderMatchSection() {
+      const arena = document.getElementById('match-arena-section');
+      if (!state.teams.length || state.playQueue.length < 2) {
+        arena.style.display = 'none';
+        return;
+      }
+
+      arena.style.display = 'block';
+      document.getElementById('arena-game-index').textContent = state.gameNumber;
+
+      const teamA = state.teams.find(t => t.id === state.playQueue[0]);
+      const teamB = state.teams.find(t => t.id === state.playQueue[1]);
+
+      if (teamA) {
+        document.getElementById('side-a-name').textContent = teamA.name;
+        document.getElementById('side-a-count').textContent = `${teamA.players.length} players`;
+      }
+      if (teamB) {
+        document.getElementById('side-b-name').textContent = teamB.name;
+        document.getElementById('side-b-count').textContent = `${teamB.players.length} players`;
+      }
+
+      const queueIds = state.playQueue.slice(2);
+      const queueBox = document.getElementById('bench-queue-box');
+      const queueList = document.getElementById('bench-queue-list');
+
+      if (queueIds.length === 0) {
+        queueBox.style.display = 'none';
+      } else {
+        queueBox.style.display = 'flex';
+        queueList.innerHTML = queueIds.map((id, idx) => {
+          const team = state.teams.find(t => t.id === id);
+          if (!team) return '';
+          return `
+            <div class="bench-item">
+              <span class="bench-order">#${idx + 1}</span>
+              <span>${escapeHtml(team.name)}</span>
+            </div>
+          `;
+        }).join('');
+      }
+    }
+
+    function renderTeams() {
+      const grid = document.getElementById('teams-grid');
+      const emptyNotice = document.getElementById('empty-teams-notice');
+
+      if (!state.teams.length) {
+        grid.innerHTML = '';
+        emptyNotice.style.display = 'block';
+        return;
+      }
+
+      emptyNotice.style.display = 'none';
+      grid.innerHTML = state.teams.map(team => {
+        return `
+          <div class="team-panel">
+            <div class="team-panel-top">
+              <div class="team-title-group">
+                <span class="team-leader-label">Captain Named</span>
+                <span class="team-panel-name">${escapeHtml(team.name)}</span>
+              </div>
+              <span class="count-pill">${team.players.length}</span>
+            </div>
+
+            <ul class="team-player-list">
+              ${team.players.map(p => `
+                <li class="team-player-row ${p.isGk ? 'is-gk' : ''}">
+                  <div class="player-id-wrap">
+                    ${p.isGk ? '<span class="gk-badge" title="Goalkeeper">🧤</span>' : ''}
+                    <span>${escapeHtml(p.name)}</span>
+                  </div>
+                  <span class="tier-badge">T${p.tier}</span>
+                </li>
+              `).join('')}
+            </ul>
+
+            <div class="team-panel-bottom">
+              <button class="btn btn-subtle btn-sm" onclick="repickGoalkeeper('${team.id}')">
+                🧤 New Keeper
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderAll() {
+      validateRoster();
+      renderRoster();
+      renderMatchSection();
+      renderTeams();
+    }
+
+    function syncConfigInputs() {
+      document.getElementById('cfg-num-teams').value = state.numTeams;
+      document.getElementById('cfg-num-tiers').value = state.numTiers;
+      document.getElementById('cfg-target-players').value = state.targetPlayersPerTeam || '';
+      updateTierSelectDropdown();
+    }
+
+    // --- Init ---
+    window.addEventListener('DOMContentLoaded', () => {
+      loadState();
+      syncConfigInputs();
+
+      document.getElementById('cfg-num-teams').addEventListener('change', (e) => {
+        let val = parseInt(e.target.value, 10);
+        if (isNaN(val) || val < 2) val = 2;
+        if (val > 8) val = 8;
+        e.target.value = val;
+        state.numTeams = val;
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById('cfg-num-tiers').addEventListener('change', (e) => {
+        let val = parseInt(e.target.value, 10);
+        if (isNaN(val) || val < 1) val = 1;
+        if (val > 10) val = 10;
+        e.target.value = val;
+        state.numTiers = val;
+        updateTierSelectDropdown();
+        saveState();
+        renderAll();
+      });
+
+      document.getElementById('cfg-target-players').addEventListener('change', (e) => {
+        let val = parseInt(e.target.value, 10) || 0;
+        state.targetPlayersPerTeam = val;
+        saveState();
+        validateRoster();
+      });
+
+      renderAll();
+      loadFromBackend();
+    });
+  </script>
+</body>
+</html>
