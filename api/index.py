@@ -145,13 +145,19 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-@app.get("/api/health")
-def health_check():
-    return {
-        "status": "ok",
-        "database": "connected",
-        "engine": engine.name
-    }
+from fastapi.responses import HTMLResponse, FileResponse
+
+# Root fallback to serve index.html directly from FastAPI if needed
+@app.get("/", response_class=HTMLResponse)
+def serve_index():
+    index_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "public", "index.html")
+    if not os.path.exists(index_path):
+        index_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "index.html")
+    if os.path.exists(index_path):
+        with open(index_path, "r", encoding="utf-8") as f:
+            return f.read()
+    return "<h1>Football Shuffler</h1>"
+
 
 # --- Auth Routes ---
 @app.post("/api/auth/register", response_model=Token)

@@ -14,3 +14,4 @@ Professional pickup football team generator, balancer, and "Winner Stays On" pit
 - **Backend**: FastAPI, SQLAlchemy, PyMySQL, Passlib, Python-Jose.
 - **Database**: MySQL (Aiven Cloud / PlanetScale / Railway).
 - **Deployment**: Vercel.
+
