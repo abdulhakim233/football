@@ -223,3 +223,43 @@ def save_game_data(payload: StatePayload, current_user: User = Depends(get_curre
         record.updated_at = datetime.datetime.utcnow()
     db.commit()
     return {"status": "saved"}
+
+# --- View All Saved Data (Admin/Inspector Dashboard) ---
+@app.get("/api/admin/overview")
+def view_database_overview(db: Session = Depends(get_db)):
+    users = db.query(User).all()
+    sessions = db.query(GameSession).all()
+    
+    users_data = []
+    for u in users:
+        sess = next((s for s in sessions if s.user_id == u.id), None)
+        parsed_state = None
+        if sess and sess.state_json:
+            try:
+                import json
+                parsed_state = json.loads(sess.state_json)
+            except Exception:
+                parsed_state = sess.state_json
+
+        users_data.append({
+            "id": u.id,
+            "username": u.username,
+            "email": u.email,
+            "registered_at": u.created_at,
+            "has_saved_game": sess is not None,
+            "last_updated": sess.updated_at if sess else None,
+            "game_summary": {
+                "player_count": len(parsed_state.get("players", [])) if isinstance(parsed_state, dict) else 0,
+                "team_count": len(parsed_state.get("teams", [])) if isinstance(parsed_state, dict) else 0,
+                "current_game_number": parsed_state.get("gameNumber", 1) if isinstance(parsed_state, dict) else 1,
+                "data": parsed_state
+            } if parsed_state else None
+        })
+
+    return {
+        "database_engine": engine.name,
+        "total_users": len(users),
+        "total_sessions": len(sessions),
+        "users": users_data
+    }
+
